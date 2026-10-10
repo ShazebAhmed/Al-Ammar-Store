@@ -5,6 +5,7 @@ import { getSettings } from "@/lib/catalogue";
 import Providers from "@/components/Providers";
 import AppShell from "@/components/AppShell";
 import ServiceWorker from "@/components/ServiceWorker";
+import StoreAnalytics from "@/components/StoreAnalytics";
 import { SITE_URL } from "@/lib/seo";
 export const revalidate = 60;
 // Fonts are served with the site from npm packages: no request to Google while the
@@ -89,6 +90,7 @@ export default async function RootLayout({ children }) {
           <AppShell settings={settings}>{children}</AppShell>
         </Providers>
         <ServiceWorker />
+        <StoreAnalytics />
       </body>
     </html>
   );
