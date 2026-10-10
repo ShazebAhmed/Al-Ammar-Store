@@ -8,6 +8,25 @@ Use Node.js 22 or newer. Run `npm ci`, copy `.env.example` to `.env.local`, fill
 
 Before a pull request run `npm audit --omit=dev --audit-level=high`, `npm run format:check`, `npm run lint`, `npm test`, `npm run build` and `npm run smoke` (starts the built site and opens every public page); CI runs the same checks. The database tests use embedded PostgreSQL (PGlite): they apply every file in `supabase/migrations/` in order, starting from the baseline copied from the live schema, on top of minimal stand-ins for the Supabase `auth` and `storage` schemas.
 
+## Visitor analytics (free Hobby plan)
+
+Vercel Web Analytics is enabled for the customer storefront. Open the project's
+[Analytics dashboard](https://vercel.com/al-ammar-enterprises/al-ammar-enterprises-pos-system/analytics)
+to see visitors, page views, popular pages, referrers, countries and devices. Select
+the Production environment to view live traffic. Collection begins only after the
+analytics integration is deployed; it cannot reconstruct earlier visits.
+
+Only `alammarstore.vercel.app` collects page views. The admin host, previews and
+localhost do not load analytics. Sign-in, password-reset, account, admin and
+order-tracking page views are discarded, and URL queries and fragments are removed.
+No custom events or customer/order details are sent. Visitor counts are estimates,
+and content blockers may prevent collection.
+
+Keep the team on **Hobby**: its included allowance is currently 50,000 events per
+month across the team with 30 days of viewable history. Collection is capped; Hobby
+does not charge for additional events. Do not enable Pro, Web Analytics Plus or a
+paid trial. See [Vercel's pricing](https://vercel.com/docs/analytics/limits-and-pricing).
+
 ## Keeping Supabase awake
 
 The free Supabase plan pauses a project after about a week without activity, and the site then shows no products. The `Supabase keep-alive` workflow loads the live home page every three days, which queries Supabase. If a run fails, the catalogue could not be loaded: open the Supabase dashboard and resume the project. GitHub disables scheduled workflows in repositories with no commits for 60 days; re-enable it from the Actions tab if that happens.
