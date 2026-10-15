@@ -40,6 +40,7 @@ export default function OrdersTab({
   ).length;
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState(focusOrder);
+  const [thermalOrder, setThermalOrder] = useState(null);
   const visible = orders.filter(
     (o) =>
       (filter === "All" || o.status === filter) &&
@@ -310,11 +311,148 @@ export default function OrdersTab({
                         </option>
                       ))}
                     </select>
+                    <button
+                      type="button"
+                      className="stx-btn stx-btn-outline"
+                      style={{ padding: "6px 12px", fontSize: ".8rem", gap: 5 }}
+                      onClick={() => setThermalOrder(o)}
+                    >
+                      <Icon name="print" size={14} /> Thermal Slip (3&quot;)
+                    </button>
                   </div>
                 </div>
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* 3-Inch Thermal Shipping Label Modal */}
+      {thermalOrder && (
+        <div
+          className="thermal-modal-overlay"
+          onClick={() => setThermalOrder(null)}
+        >
+          <div
+            className="thermal-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="thermal-slip-toolbar">
+              <strong>Thermal Shipping Label (3&quot; / 80mm)</strong>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  type="button"
+                  className="stx-btn stx-btn-primary"
+                  style={{ padding: "6px 14px", fontSize: ".85rem" }}
+                  onClick={() => window.print()}
+                >
+                  <Icon name="print" size={14} /> Print Label
+                </button>
+                <button
+                  type="button"
+                  className="stx-btn stx-btn-outline"
+                  style={{ padding: "6px 12px", fontSize: ".85rem" }}
+                  onClick={() => setThermalOrder(null)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div className="thermal-printable-receipt">
+              <div className="thermal-store-name">
+                {settings.storeName || "AL-AMMAR STORE"}
+              </div>
+              <div className="thermal-sub">CASH ON DELIVERY · PAKISTAN</div>
+              <div className="thermal-divider" />
+
+              <div className="thermal-order-row">
+                <span className="thermal-order-id">{thermalOrder.id}</span>
+                <span className="thermal-time">
+                  {formatOrderTime(thermalOrder.createdAt)}
+                </span>
+              </div>
+              <div className="thermal-divider" />
+
+              <div className="thermal-consignee">
+                <div className="thermal-label">DELIVER TO:</div>
+                <div className="thermal-customer-name">
+                  {thermalOrder.customer.name}
+                </div>
+                <div className="thermal-customer-phone">
+                  📞 {thermalOrder.customer.phone}
+                </div>
+                <div className="thermal-customer-address">
+                  {thermalOrder.customer.address}, {thermalOrder.customer.city}
+                </div>
+                {thermalOrder.customer.notes && (
+                  <div className="thermal-customer-note">
+                    Note: {thermalOrder.customer.notes}
+                  </div>
+                )}
+              </div>
+              <div className="thermal-divider" />
+
+              <div className="thermal-items-table">
+                <div className="thermal-item-header">
+                  <span>ITEM</span>
+                  <span>QTY</span>
+                  <span>AMT</span>
+                </div>
+                {thermalOrder.items.map((it) => (
+                  <div
+                    key={`${it.productId}:${it.variant || ""}`}
+                    className="thermal-item-row"
+                  >
+                    <span className="thermal-item-name">
+                      {itemName(it.name, it.variant)}
+                    </span>
+                    <span>{it.qty}</span>
+                    <span>
+                      {formatMoney(it.price * it.qty, settings.currencySymbol)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="thermal-divider" />
+
+              <div className="thermal-summary">
+                <div className="thermal-summary-line">
+                  <span>Delivery:</span>
+                  <span>
+                    {formatMoney(
+                      thermalOrder.shippingFee,
+                      settings.currencySymbol,
+                    )}
+                  </span>
+                </div>
+                {thermalOrder.discount > 0 && (
+                  <div className="thermal-summary-line">
+                    <span>Discount:</span>
+                    <span>
+                      −
+                      {formatMoney(
+                        thermalOrder.discount,
+                        settings.currencySymbol,
+                      )}
+                    </span>
+                  </div>
+                )}
+                <div className="thermal-cod-box">
+                  <div className="thermal-cod-title">CASH TO COLLECT:</div>
+                  <div className="thermal-cod-amount">
+                    {formatMoney(thermalOrder.total, settings.currencySymbol)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="thermal-footer">
+                Thank you for your order!
+                <br />
+                Questions? WhatsApp: {settings.whatsapp || "0300-1234567"}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

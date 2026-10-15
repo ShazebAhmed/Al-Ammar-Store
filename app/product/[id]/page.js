@@ -10,6 +10,8 @@ import ProductCard from "@/components/ProductCard";
 import ShareButton from "@/components/ShareButton";
 import { productData, jsonLd } from "@/lib/seo";
 
+import WishlistButton from "@/components/WishlistButton";
+
 export const revalidate = 60;
 // Pages are made on first visit and then cached, refreshed at most once a minute.
 export function generateStaticParams() {
@@ -146,7 +148,14 @@ export default async function ProductPage({ params }) {
 
         <aside className="pdp-side">
           <ProductPurchasePanel product={product} settings={settings} />
-          <ShareButton title={product.name} />
+          <div className="pdp-secondary-actions">
+            <WishlistButton
+              productId={product.id}
+              showText={true}
+              className="pdp-wishlist-action"
+            />
+            <ShareButton title={product.name} />
+          </div>
         </aside>
       </div>
 

@@ -4,6 +4,7 @@ import { formatMoney, categoryTabs, deliveryLine } from "@/lib/format";
 import Icon from "@/components/Icon";
 import ProductCard from "@/components/ProductCard";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
+import LiveSearch from "@/components/LiveSearch";
 import { storeData, jsonLd } from "@/lib/seo";
 import { photo, PHOTO_SIZES } from "@/lib/photo";
 export const revalidate = 60;
@@ -197,16 +198,10 @@ export default async function HomePage({ searchParams }) {
           method="get"
         >
           <input type="hidden" name="category" value={category} />
-          <label className="catalogue-search">
-            <Icon name="search" />
-            <input
-              name="q"
-              defaultValue={q}
-              key={q}
-              placeholder="Find something you’ll love…"
-              aria-label="Search products"
-            />
-          </label>
+          <LiveSearch
+            defaultValue={q}
+            currencySymbol={settings.currencySymbol}
+          />
           <label className="stock-toggle">
             <input
               type="checkbox"

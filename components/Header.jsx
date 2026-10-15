@@ -4,8 +4,15 @@ import { usePathname } from "next/navigation";
 import { useStore } from "./Providers";
 import Icon from "./Icon";
 export default function Header({ settings }) {
-  const { cartCount, currentUser, isAdmin, inStoreApp } = useStore();
-  const path = usePathname();
+  const {
+    cartCount,
+    currentUser,
+    isAdmin,
+    inStoreApp,
+    openCartDrawer,
+    wishlistCount,
+  } = useStore();
+  const path = usePathname() || "";
   // Signing in from a page comes back to it (the shop's home is the default).
   const signIn =
     path === "/" || path.startsWith("/auth")
@@ -67,9 +74,28 @@ export default function Header({ settings }) {
                 {currentUser ? "My account" : "Sign in"}
               </span>
             </Link>
+            {wishlistCount > 0 && (
+              <span
+                className="account-link wishlist-indicator"
+                title={`${wishlistCount} saved item${wishlistCount === 1 ? "" : "s"}`}
+              >
+                <Icon
+                  name="favorite"
+                  size={20}
+                  style={{ color: "var(--brick, #aa4d38)" }}
+                />
+                <span className="cart-count wishlist-count">
+                  {wishlistCount}
+                </span>
+              </span>
+            )}
             <Link
               className="cart-link"
               href="/cart"
+              onClick={(e) => {
+                e.preventDefault();
+                openCartDrawer();
+              }}
               aria-label={`Basket, ${cartCount} items`}
             >
               <Icon name="shopping_cart" size={20} />

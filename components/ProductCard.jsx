@@ -4,6 +4,7 @@ import StarRow from "./StarRow";
 import AddToCartButton from "./AddToCartButton";
 import BuyNowButton from "./BuyNowButton";
 import CardGallery from "./CardGallery";
+import WishlistButton from "./WishlistButton";
 import { formatMoney, salePercent } from "@/lib/format";
 export default function ProductCard({ product, settings, rating }) {
   const soldOut = Number(product.stock) <= 0;
@@ -11,6 +12,7 @@ export default function ProductCard({ product, settings, rating }) {
   return (
     <article className="product-card">
       <div className="product-image">
+        <WishlistButton productId={product.id} className="card-wishlist-btn" />
         {product.images?.[0] ? (
           <CardGallery
             images={product.images}

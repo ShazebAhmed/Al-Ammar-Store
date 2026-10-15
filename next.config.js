@@ -26,16 +26,15 @@ const csp = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  "frame-ancestors 'none'",
+  ...(dev ? [] : ["frame-ancestors 'none'"]),
   "upgrade-insecure-requests",
 ].join("; ");
 
-// Security headers for every page and file. The site is never shown inside another
-// site's frame, and browsers must not guess file types or send full addresses to
-// other sites.
+// Security headers for every page and file. In production, the site is never shown
+// inside another site's frame; in development, framing is permitted for the preview environment.
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "X-Frame-Options", value: "DENY" },
+  ...(dev ? [] : [{ key: "X-Frame-Options", value: "DENY" }]),
   { key: "Content-Security-Policy", value: csp },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
@@ -46,6 +45,7 @@ const securityHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   poweredByHeader: false,
   images: {
     remotePatterns: [{ protocol: "https", hostname: "**.supabase.co" }],

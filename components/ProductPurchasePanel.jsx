@@ -222,46 +222,66 @@ export default function ProductPurchasePanel({ product, settings }) {
                 : "All available stock added"}
             </button>
           </div>
-          <BuyNowButton
-            className="stx-btn stx-btn-gold buy-now-wide"
-            productId={product.id}
-            variant={choice}
-            qty={Math.max(1, Math.min(qty, stock))}
-            disabled={!needsChoice && !stock}
-            beforeBuy={() => {
-              if (!needsChoice) return true;
-              askForChoice();
-              return false;
-            }}
-          >
-            Buy now
-          </BuyNowButton>
-          {whatsappLink && (
-            <a
-              className="stx-btn stx-btn-outline"
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ marginTop: 10 }}
+          <div className="purchase-buttons-group">
+            <BuyNowButton
+              className="stx-btn stx-btn-gold buy-now-wide"
+              productId={product.id}
+              variant={choice}
+              qty={Math.max(1, Math.min(qty, stock))}
+              disabled={!needsChoice && !stock}
+              beforeBuy={() => {
+                if (!needsChoice) return true;
+                askForChoice();
+                return false;
+              }}
             >
-              <Icon name="chat" /> Order on WhatsApp
-            </a>
-          )}
+              Buy now
+            </BuyNowButton>
+
+            {whatsappLink && (
+              <a
+                className="stx-btn stx-btn-whatsapp buy-now-wide"
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Icon name="chat" size={17} /> Order on WhatsApp
+              </a>
+            )}
+          </div>
         </>
       )}
-      <div className="purchase-benefits">
-        <p>
-          <Icon name="local_shipping" /> Delivery:{" "}
-          {formatMoney(settings.shippingFee, settings.currencySymbol)}
-          {settings.freeDeliveryOver > 0 &&
-            ` (free over ${formatMoney(settings.freeDeliveryOver, settings.currencySymbol)})`}
-        </p>
-        <p>
-          <Icon name="account_balance_wallet" /> Cash on delivery
-        </p>
-        <p>
-          <Icon name="call" /> We’ll call to confirm your order
-        </p>
+
+      {/* Luxury Delivery & Trust Section */}
+      <div className="delivery-estimator-card">
+        <div className="estimator-header">
+          <Icon name="local_shipping" size={18} />
+          <strong>Estimated Delivery &amp; Protection</strong>
+        </div>
+        <div className="estimator-cities">
+          <div className="city-row">
+            <span>Karachi:</span>
+            <strong>1–2 working days</strong>
+          </div>
+          <div className="city-row">
+            <span>Lahore, Islamabad, Rawalpindi:</span>
+            <strong>2–3 working days</strong>
+          </div>
+          <div className="city-row">
+            <span>Rest of Pakistan:</span>
+            <strong>3–5 working days</strong>
+          </div>
+        </div>
+        <div className="estimator-footer">
+          <div>
+            <Icon name="account_balance_wallet" size={15} />
+            <span>Cash on delivery available nationwide</span>
+          </div>
+          <div>
+            <Icon name="verified" size={15} />
+            <span>7-day return &amp; exchange guarantee</span>
+          </div>
+        </div>
       </div>
     </div>
   );

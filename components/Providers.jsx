@@ -54,6 +54,8 @@ export default function Providers({ children }) {
   const [cartLoadError, setCartLoadError] = useState("");
   const [loadRevision, setLoadRevision] = useState(0);
   const [appRole, setAppRole] = useState("");
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
   const cartRef = useRef([]),
     ownerRef = useRef(null),
     queue = useRef(Promise.resolve()),
@@ -66,6 +68,28 @@ export default function Providers({ children }) {
   }
   useEffect(() => () => clearTimeout(toastTimer.current), []);
   useEffect(() => setAppRole(readAppRole()), []);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("al-ammar:wishlist") || "[]",
+      );
+      if (Array.isArray(saved)) setWishlist(saved);
+    } catch {}
+  }, []);
+  function toggleWishlist(productId) {
+    if (!productId) return;
+    setWishlist((prev) => {
+      const exists = prev.includes(productId);
+      const next = exists
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId];
+      try {
+        localStorage.setItem("al-ammar:wishlist", JSON.stringify(next));
+      } catch {}
+      notify(exists ? "Removed from saved items" : "Saved to your wishlist");
+      return next;
+    });
+  }
   useEffect(() => {
     let alive = true;
     const load = () =>
@@ -274,6 +298,7 @@ export default function Providers({ children }) {
       ),
     );
     notify("Added to your basket");
+    setIsCartDrawerOpen(true);
     return true;
   }
   function setCartQty(productId, qty, stock = 999, variant = "") {
@@ -337,6 +362,13 @@ export default function Providers({ children }) {
         notify,
         syncError,
         retrySync: () => sync(cartRef.current, ownerRef.current),
+        isCartDrawerOpen,
+        openCartDrawer: () => setIsCartDrawerOpen(true),
+        closeCartDrawer: () => setIsCartDrawerOpen(false),
+        wishlist,
+        toggleWishlist,
+        isInWishlist: (id) => wishlist.includes(id),
+        wishlistCount: wishlist.length,
       }}
     >
       {children}
