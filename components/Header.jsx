@@ -74,21 +74,25 @@ export default function Header({ settings }) {
                 {currentUser ? "My account" : "Sign in"}
               </span>
             </Link>
-            {wishlistCount > 0 && (
-              <span
-                className="account-link wishlist-indicator"
-                title={`${wishlistCount} saved item${wishlistCount === 1 ? "" : "s"}`}
-              >
-                <Icon
-                  name="favorite"
-                  size={20}
-                  style={{ color: "var(--brick, #aa4d38)" }}
-                />
+            <Link
+              className="account-link wishlist-indicator"
+              href="/wishlist"
+              aria-label={`Wishlist, ${wishlistCount} saved item${wishlistCount === 1 ? "" : "s"}`}
+              aria-current={path === "/wishlist" ? "page" : undefined}
+            >
+              <Icon
+                name={wishlistCount ? "favorite" : "favorite_border"}
+                fill={wishlistCount > 0}
+                size={20}
+                style={{ color: "var(--brick, #aa4d38)" }}
+              />
+              <span className="wishlist-label">Wishlist</span>
+              {wishlistCount > 0 && (
                 <span className="cart-count wishlist-count">
                   {wishlistCount}
                 </span>
-              </span>
-            )}
+              )}
+            </Link>
             <Link
               className="cart-link"
               href="/cart"

@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { loadBrowserClient } from "@/lib/supabase-browser";
+import { readWishlist, WISHLIST_KEY } from "@/lib/wishlist";
 import {
   changeQuantity,
   mergeCarts,
@@ -56,6 +57,8 @@ export default function Providers({ children }) {
   const [appRole, setAppRole] = useState("");
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+  const [wishlistReady, setWishlistReady] = useState(false);
+  const wishlistRef = useRef([]);
   const cartRef = useRef([]),
     ownerRef = useRef(null),
     queue = useRef(Promise.resolve()),
@@ -69,26 +72,45 @@ export default function Providers({ children }) {
   useEffect(() => () => clearTimeout(toastTimer.current), []);
   useEffect(() => setAppRole(readAppRole()), []);
   useEffect(() => {
+    function restore(value) {
+      const saved = readWishlist(value);
+      wishlistRef.current = saved;
+      setWishlist(saved);
+    }
     try {
-      const saved = JSON.parse(
-        localStorage.getItem("al-ammar:wishlist") || "[]",
-      );
-      if (Array.isArray(saved)) setWishlist(saved);
+      restore(localStorage.getItem(WISHLIST_KEY));
     } catch {}
+    setWishlistReady(true);
+    const onStorage = (event) => {
+      if (event.key === WISHLIST_KEY || event.key === null)
+        restore(event.newValue);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
   function toggleWishlist(productId) {
-    if (!productId) return;
-    setWishlist((prev) => {
-      const exists = prev.includes(productId);
-      const next = exists
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId];
-      try {
-        localStorage.setItem("al-ammar:wishlist", JSON.stringify(next));
-      } catch {}
-      notify(exists ? "Removed from saved items" : "Saved to your wishlist");
-      return next;
-    });
+    if (!wishlistReady) return;
+    const id = readWishlist(JSON.stringify([productId]))[0];
+    if (!id) return;
+    const exists = wishlistRef.current.includes(id);
+    const next = exists
+      ? wishlistRef.current.filter((saved) => saved !== id)
+      : [...wishlistRef.current, id];
+    wishlistRef.current = next;
+    setWishlist(next);
+    try {
+      localStorage.setItem(WISHLIST_KEY, JSON.stringify(next));
+      notify(
+        exists
+          ? "Removed from your wishlist"
+          : "Saved! Open Wishlist in the header to find it.",
+      );
+    } catch {
+      notify(
+        "Your changes only last for this visit because browser storage is unavailable.",
+        "error",
+      );
+    }
   }
   useEffect(() => {
     let alive = true;
@@ -340,6 +362,7 @@ export default function Providers({ children }) {
     <StoreContext.Provider
       value={{
         supabase,
+        clientLoaded,
         session,
         profile,
         currentUser,
@@ -366,8 +389,9 @@ export default function Providers({ children }) {
         openCartDrawer: () => setIsCartDrawerOpen(true),
         closeCartDrawer: () => setIsCartDrawerOpen(false),
         wishlist,
+        wishlistReady,
         toggleWishlist,
-        isInWishlist: (id) => wishlist.includes(id),
+        isInWishlist: (id) => wishlist.includes(String(id).toLowerCase()),
         wishlistCount: wishlist.length,
       }}
     >

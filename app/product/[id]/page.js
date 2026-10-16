@@ -152,6 +152,7 @@ export default async function ProductPage({ params }) {
             <WishlistButton
               productId={product.id}
               showText={true}
+              productName={product.name}
               className="pdp-wishlist-action"
             />
             <ShareButton title={product.name} />
