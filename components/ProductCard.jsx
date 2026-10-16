@@ -12,7 +12,11 @@ export default function ProductCard({ product, settings, rating }) {
   return (
     <article className="product-card">
       <div className="product-image">
-        <WishlistButton productId={product.id} className="card-wishlist-btn" />
+        <WishlistButton
+          productId={product.id}
+          productName={product.name}
+          className="card-wishlist-btn"
+        />
         {product.images?.[0] ? (
           <CardGallery
             images={product.images}

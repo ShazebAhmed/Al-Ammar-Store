@@ -16,6 +16,7 @@ const PAGES = [
   ["/policies/delete-account", 200, /Delete it yourself/],
   ["/track", 200, /Track/],
   ["/cart", 200, /basket/i],
+  ["/wishlist", 200, /Your wishlist/],
   ["/checkout", 200, /Make it yours/],
   ["/auth", 200, /Welcome back/],
   ["/reset-password", 200, /password/i],

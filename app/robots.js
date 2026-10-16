@@ -9,6 +9,7 @@ export default function robots() {
           "/admin",
           "/account",
           "/cart",
+          "/wishlist",
           "/checkout",
           "/auth",
           "/reset-password",
